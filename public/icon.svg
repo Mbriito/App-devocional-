@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rosewoodGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9e2d46" />
+      <stop offset="50%" stop-color="#702536" />
+      <stop offset="100%" stop-color="#3f101b" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#edd18c" />
+      <stop offset="50%" stop-color="#deba5e" />
+      <stop offset="100%" stop-color="#c49d3c" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded rectangle -->
+  <rect width="512" height="512" rx="128" fill="url(#rosewoodGrad)" />
+
+  <!-- Outer delicate gold border ring -->
+  <rect x="24" y="24" width="464" height="464" rx="104" fill="none" stroke="url(#goldGrad)" stroke-width="4" opacity="0.6" />
+
+  <!-- Inner delicate ring -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.35" stroke-dasharray="8 6" />
+
+  <!-- Center Heart & Open Bible / Bloom motif -->
+  <g transform="translate(256, 256) scale(2.2) translate(-64, -64)">
+    <!-- Bible Base Pages -->
+    <path d="M 64 85 C 44 72 20 74 12 76 L 12 36 C 22 34 46 32 64 45 C 82 32 106 34 116 36 L 116 76 C 108 74 84 72 64 85 Z" 
+          fill="#fdf4f6" opacity="0.95" />
+    
+    <!-- Bible spine and page details -->
+    <path d="M 64 45 L 64 85" stroke="#9e2d46" stroke-width="2.5" stroke-linecap="round" />
+    <path d="M 22 47 C 34 45 50 48 60 56" fill="none" stroke="#e58597" stroke-width="1.8" stroke-linecap="round" opacity="0.7" />
+    <path d="M 68 56 C 78 48 94 45 106 47" fill="none" stroke="#e58597" stroke-width="1.8" stroke-linecap="round" opacity="0.7" />
+    <path d="M 22 57 C 34 55 50 58 60 66" fill="none" stroke="#e58597" stroke-width="1.8" stroke-linecap="round" opacity="0.7" />
+    <path d="M 68 66 C 78 58 94 55 106 57" fill="none" stroke="#e58597" stroke-width="1.8" stroke-linecap="round" opacity="0.7" />
+
+    <!-- Blooming Heart Emblem / Cross above Bible -->
+    <path d="M 64 22 C 60 16 52 14 46 19 C 39 25 40 34 64 50 C 88 34 89 25 82 19 C 76 14 68 16 64 22 Z" 
+          fill="url(#goldGrad)" />
+    
+    <!-- Central Cross inside heart -->
+    <path d="M 64 21 L 64 35 M 58 26 L 70 26" stroke="#702536" stroke-width="2" stroke-linecap="round" />
+  </g>
+
+  <!-- Title Monogram / Sparkles -->
+  <circle cx="120" cy="120" r="6" fill="#edd18c" opacity="0.8" />
+  <circle cx="392" cy="120" r="6" fill="#edd18c" opacity="0.8" />
+  <circle cx="256" cy="425" r="4" fill="#edd18c" opacity="0.6" />
+</svg>

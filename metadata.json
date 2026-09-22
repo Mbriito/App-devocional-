@@ -1,0 +1,6 @@
+{
+  "name": "Devocional Mulher Plena",
+  "description": "50 mensagens devocionais bíblicas e práticas para o dia a dia da mulher: identidade, carreira, família, emoções e fé sem culpas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

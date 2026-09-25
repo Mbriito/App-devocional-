@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Sparkles, Eye, EyeOff, AlertCircle, ShieldCheck, HelpCircle, Clock } from 'lucide-react';
+import { Lock, Sparkles, Eye, EyeOff, AlertCircle, ShieldCheck, Clock, MessageCircle, ArrowRight } from 'lucide-react';
 import { verifyPassword } from '../utils/security';
+import { shareOnWhatsApp, SUPPORT_WHATSAPP_NUMBER, SUPPORT_WHATSAPP_DISPLAY } from '../utils/whatsapp';
 
 interface GateLockModalProps {
   isLocked: boolean;
@@ -55,7 +56,7 @@ export const GateLockModal: React.FC<GateLockModalProps> = ({ isLocked, onUnlock
         if (newAttempts >= MAX_ATTEMPTS) {
           setLockoutTimer(LOCKOUT_SECONDS);
         } else {
-          setTimeout(() => setError(false), 3500);
+          setTimeout(() => setError(false), 4000);
         }
       }
     } catch {
@@ -65,9 +66,11 @@ export const GateLockModal: React.FC<GateLockModalProps> = ({ isLocked, onUnlock
     }
   };
 
-  const handleSupportWhatsApp = () => {
-    const text = encodeURIComponent("Olá! Sou aluna do devocional Mulher Plena e preciso de auxílio com meu acesso.");
-    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  const handleRequestPasswordWhatsApp = () => {
+    const text = (
+      `Olá! Tenho interesse no aplicativo Mulher Plena (com mais de 50 mensagens devocionais), mas ainda não tenho a senha de acesso. Poderia me enviar a senha de aluna pelo WhatsApp, por favor?`
+    );
+    shareOnWhatsApp(text, SUPPORT_WHATSAPP_NUMBER);
   };
 
   const isBlocked = lockoutTimer > 0;
@@ -85,7 +88,7 @@ export const GateLockModal: React.FC<GateLockModalProps> = ({ isLocked, onUnlock
           <Lock className="w-6 h-6 text-warmgold-300" />
         </div>
 
-        {/* Title */}
+        {/* Title & App Value Proposition */}
         <div className="space-y-1.5">
           <span className="text-[10px] font-bold tracking-widest text-warmgold-600 dark:text-warmgold-400 uppercase font-display block">
             Área Exclusiva de Acesso
@@ -94,7 +97,7 @@ export const GateLockModal: React.FC<GateLockModalProps> = ({ isLocked, onUnlock
             Mulher Plena
           </h2>
           <p className="text-xs text-stone-600 dark:text-stone-300 max-w-xs mx-auto leading-relaxed font-light">
-            Digite sua senha de aluna para acessar as 50 mensagens devocionais e o diário de oração.
+            Digite sua senha de aluna para acessar as <strong className="font-semibold text-rosewood-700 dark:text-rosewood-300">mais de 50 mensagens devocionais</strong> diárias, trilhas temáticas e seu diário de oração.
           </p>
         </div>
 
@@ -126,11 +129,24 @@ export const GateLockModal: React.FC<GateLockModalProps> = ({ isLocked, onUnlock
             </button>
           </div>
 
-          {/* Error Message - Does NOT reveal password */}
+          {/* Error Message with direct WhatsApp help */}
           {error && !isBlocked && (
-            <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-medium flex items-center justify-center gap-1.5 animate-in fade-in">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-              <span>Senha incorreta. Verifique os dados digitados.</span>
+            <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-left space-y-1.5 animate-in fade-in">
+              <div className="flex items-center gap-1.5 text-rose-700 dark:text-rose-400 text-xs font-semibold">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>Senha incorreta</span>
+              </div>
+              <p className="text-[11px] text-stone-600 dark:text-stone-300 leading-tight font-light">
+                Não tem a senha ou esqueceu? Fale no WhatsApp para receber o acesso:
+              </p>
+              <button
+                type="button"
+                onClick={handleRequestPasswordWhatsApp}
+                className="text-emerald-700 dark:text-emerald-400 hover:underline text-[11px] font-bold flex items-center gap-1 cursor-pointer pt-0.5"
+              >
+                <MessageCircle className="w-3 h-3" />
+                <span>Pedir senha no WhatsApp: {SUPPORT_WHATSAPP_DISPLAY}</span>
+              </button>
             </div>
           )}
 
@@ -156,18 +172,51 @@ export const GateLockModal: React.FC<GateLockModalProps> = ({ isLocked, onUnlock
           </button>
         </form>
 
-        {/* Footer */}
+        {/* Dedicated "Não tem a senha?" WhatsApp Card */}
+        <div className="p-4 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/90 dark:border-emerald-900/60 text-left space-y-2 shadow-2xs">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                <MessageCircle className="w-3.5 h-3.5" />
+              </span>
+              <span className="text-xs font-bold text-emerald-950 dark:text-emerald-100">
+                Não tem a senha de acesso?
+              </span>
+            </div>
+            <span className="text-[10px] font-bold bg-emerald-200/70 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200 px-2 py-0.5 rounded-full">
+              Atendimento Rápido
+            </span>
+          </div>
+
+          <p className="text-[11px] text-stone-600 dark:text-stone-300 leading-relaxed font-light">
+            Se você ainda não recebeu ou esqueceu sua senha para ler as mais de 50 mensagens devocionais, envie uma mensagem no WhatsApp.
+          </p>
+
+          <button
+            type="button"
+            onClick={handleRequestPasswordWhatsApp}
+            className="w-full py-2.5 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Pedir Senha no WhatsApp: {SUPPORT_WHATSAPP_DISPLAY}</span>
+            <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+          </button>
+        </div>
+
+        {/* Security & Support Footer */}
         <div className="pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-[11px] text-stone-400">
           <span className="flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
             <span>Acesso Criptografado</span>
           </span>
           <button
-            onClick={handleSupportWhatsApp}
-            className="text-rosewood-600 dark:text-rosewood-400 hover:underline font-medium flex items-center gap-1 cursor-pointer"
+            type="button"
+            onClick={handleRequestPasswordWhatsApp}
+            className="text-emerald-700 dark:text-emerald-400 hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+            title={`Suporte no WhatsApp ${SUPPORT_WHATSAPP_DISPLAY}`}
           >
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Suporte no WhatsApp</span>
+            <MessageCircle className="w-3.5 h-3.5" />
+            <span>WhatsApp {SUPPORT_WHATSAPP_DISPLAY}</span>
           </button>
         </div>
 

@@ -30,13 +30,19 @@ export function getFullSermonShareText(sermon: Sermon): string {
   );
 }
 
+export const SUPPORT_WHATSAPP_NUMBER = '5587957466249';
+export const SUPPORT_WHATSAPP_DISPLAY = '(87) 95746-6249';
+
 /**
  * Opens WhatsApp with the pre-filled encoded text safely,
- * avoiding iframe/popup blocker restrictions.
+ * optionally targeting a specific phone number, avoiding iframe/popup blocker restrictions.
  */
-export function shareOnWhatsApp(text: string): boolean {
+export function shareOnWhatsApp(text: string, phone?: string): boolean {
   const encoded = encodeURIComponent(text);
-  const url = `https://api.whatsapp.com/send?text=${encoded}`;
+  const cleanPhone = phone ? phone.replace(/\D/g, '') : '';
+  const url = cleanPhone
+    ? `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encoded}`
+    : `https://api.whatsapp.com/send?text=${encoded}`;
   
   try {
     const link = document.createElement('a');

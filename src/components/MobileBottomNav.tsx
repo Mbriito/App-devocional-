@@ -3,6 +3,7 @@ import { Sparkles, BookHeart, Layers, Bookmark, PenTool } from 'lucide-react';
 
 interface MobileBottomNavProps {
   activeTab: string;
+  totalCount: number;
   onSelectTab: (tab: string) => void;
   onOpenDaily: () => void;
   favCount: number;
@@ -11,6 +12,7 @@ interface MobileBottomNavProps {
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   activeTab,
+  totalCount,
   onSelectTab,
   onOpenDaily,
   favCount,
@@ -38,14 +40,14 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         }`}
       >
         <BookHeart className="w-5 h-5" />
-        <span className="text-[10px] mt-0.5">50 Lições</span>
+        <span className="text-[10px] mt-0.5">{totalCount} Lições</span>
       </button>
 
       {/* Módulos */}
       <button
         onClick={() => onSelectTab('1')}
         className={`flex flex-col items-center justify-center p-1.5 min-w-[56px] min-h-[44px] rounded-xl transition-colors ${
-          ['1', '2', '3', '4', '5'].includes(activeTab)
+          ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].includes(activeTab)
             ? 'text-rosewood-700 dark:text-rosewood-400 font-bold'
             : 'text-stone-600 dark:text-stone-400'
         }`}

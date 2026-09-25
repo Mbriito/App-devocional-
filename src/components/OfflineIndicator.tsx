@@ -22,7 +22,7 @@ export const OfflineIndicator: React.FC = () => {
             Modo Offline Ativo
           </p>
           <p className="text-[11px] text-stone-300 leading-tight font-light mt-0.5">
-            Todas as 50 mensagens estão salvas no seu aparelho para leitura sem internet.
+            Todas as mensagens devocionais estão salvas no seu aparelho para leitura sem internet.
           </p>
         </div>
       </div>

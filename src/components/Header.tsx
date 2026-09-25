@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookHeart, Sparkles, CheckCircle2, Share2, Moon, Sun, Printer, Lock, Type } from 'lucide-react';
+import { BookHeart, Sparkles, CheckCircle2, Share2, Moon, Sun, Printer, Lock, Type, BookMarked } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
 
 interface HeaderProps {
@@ -12,6 +12,7 @@ interface HeaderProps {
   onShareApp: () => void;
   onLockApp: () => void;
   onOpenFontSize: () => void;
+  onOpen500Modal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,6 +25,7 @@ export const Header: React.FC<HeaderProps> = ({
   onShareApp,
   onLockApp,
   onOpenFontSize,
+  onOpen500Modal,
 }) => {
   return (
     <header className="no-print sticky top-0 z-40 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md border-b border-rosewood-200/60 dark:border-rosewood-950/80 shadow-xs transition-colors">
@@ -61,6 +63,18 @@ export const Header: React.FC<HeaderProps> = ({
             <Sparkles className="w-3.5 h-3.5 text-warmgold-500 fill-warmgold-400" />
             <span>Mensagem de Hoje</span>
           </button>
+
+          {/* 500 Outlines Catalog / PDF */}
+          {onOpen500Modal && (
+            <button
+              onClick={onOpen500Modal}
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-warmgold-50 dark:bg-warmgold-950/40 text-warmgold-800 dark:text-warmgold-300 border border-warmgold-300/80 dark:border-warmgold-800 text-xs font-semibold hover:bg-warmgold-100 transition-all cursor-pointer shadow-2xs"
+              title="Abrir Acervo 500 Esboços e salvar em PDF"
+            >
+              <BookMarked className="w-3.5 h-3.5 text-warmgold-600" />
+              <span>500 Esboços (PDF)</span>
+            </button>
+          )}
 
           {/* Reading Progress Pill */}
           <button

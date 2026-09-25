@@ -1,4 +1,7 @@
 import { Sermon, ModuleCategory } from '../types';
+import { SERMONS_51_TO_100 } from './sermonsData51to100';
+export { THEMATIC_TRACKS } from './thematicTracks';
+export { VOLUMES_500, type VolumeInfo } from './catalog500';
 
 export const MODULES: ModuleCategory[] = [
   {
@@ -40,10 +43,50 @@ export const MODULES: ModuleCategory[] = [
     range: "Mensagens 41 a 50",
     iconName: "Sunrise",
     count: 10
+  },
+  {
+    id: 6,
+    title: "Sabedoria Prática & Emoções",
+    subtitle: "Domínio da mente, mansidão e paz interior",
+    range: "Mensagens 51 a 60",
+    iconName: "Compass",
+    count: 10
+  },
+  {
+    id: 7,
+    title: "Propósito & Mulheres da Bíblia",
+    subtitle: "Débora, Ester, Rute, Abigail e liderança ministerial",
+    range: "Mensagens 61 a 70",
+    iconName: "Crown",
+    count: 10
+  },
+  {
+    id: 8,
+    title: "Oração Fervente & Guerra Espiritual",
+    subtitle: "Quarto secreto, autoridade e adoração na tempestade",
+    range: "Mensagens 71 a 80",
+    iconName: "Flame",
+    count: 10
+  },
+  {
+    id: 9,
+    title: "Superação do Luto & Reconstrução",
+    subtitle: "Consolo nas perdas, cura e milagres no deserto",
+    range: "Mensagens 81 a 90",
+    iconName: "Shield",
+    count: 10
+  },
+  {
+    id: 10,
+    title: "Legado Feminino & Gerações",
+    subtitle: "Maternidade espiritual, Provérbios 31 e coroa eterna",
+    range: "Mensagens 91 a 100",
+    iconName: "Award",
+    count: 10
   }
 ];
 
-export const SERMONS: Sermon[] = [
+const INITIAL_SERMONS: Sermon[] = [
   // Módulo 1: Identidade, Graça e Autocuidado
   {
     num: 1,
@@ -953,4 +996,9 @@ export const SERMONS: Sermon[] = [
     prayer: "Pai celeste, bendigo Teu santo Nome por esta jornada transformadora. Agradeço por cada cura, consolo e direção recebida. Abraço meu novo tempo de cabeça erguida, coração em paz e pés firmados na Tua graça. Em nome de Jesus Cristo, amém!",
     moodTags: ['recomeco', 'gratidao', 'descanso']
   }
+];
+
+export const SERMONS: Sermon[] = [
+  ...INITIAL_SERMONS,
+  ...SERMONS_51_TO_100
 ];

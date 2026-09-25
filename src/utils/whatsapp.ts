@@ -31,9 +31,33 @@ export function getFullSermonShareText(sermon: Sermon): string {
 }
 
 /**
- * Opens WhatsApp with the pre-filled encoded text.
+ * Opens WhatsApp with the pre-filled encoded text safely,
+ * avoiding iframe/popup blocker restrictions.
  */
-export function shareOnWhatsApp(text: string) {
+export function shareOnWhatsApp(text: string): boolean {
   const encoded = encodeURIComponent(text);
-  window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+  const url = `https://api.whatsapp.com/send?text=${encoded}`;
+  
+  try {
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      if (document.body.contains(link)) {
+        document.body.removeChild(link);
+      }
+    }, 200);
+    return true;
+  } catch (err) {
+    console.warn('Anchor click failed, falling back to window.open', err);
+    try {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

@@ -27,3 +27,13 @@ export interface ModuleCategory {
 }
 
 export type TextSizeOption = 'sm' | 'base' | 'lg' | 'xl';
+
+export interface ThematicTrack {
+  id: string;
+  title: string;
+  subtitle: string;
+  emoji: string;
+  badge: string;
+  description: string;
+  sermonIds: number[];
+}

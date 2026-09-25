@@ -14,9 +14,12 @@ import {
   Copy,
   Check as IconCheck,
   MessageCircle,
-  Quote
+  Quote,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 import { Sermon, TextSizeOption } from '../types';
+import { THEMATIC_TRACKS } from '../data/thematicTracks';
 import { getVerseShareText, shareOnWhatsApp } from '../utils/whatsapp';
 
 interface SermonCardProps {
@@ -26,6 +29,9 @@ interface SermonCardProps {
   hasNote: boolean;
   isPlayingAudio: boolean;
   textSize: TextSizeOption;
+  activeTrackId?: string | null;
+  totalSermonsCount?: number;
+  onNavigateToSermon?: (num: number) => void;
   onToggleRead: (num: number) => void;
   onToggleFavorite: (num: number) => void;
   onOpenNotes: (num: number) => void;
@@ -41,6 +47,9 @@ export const SermonCard: React.FC<SermonCardProps> = ({
   hasNote,
   isPlayingAudio,
   textSize,
+  activeTrackId,
+  totalSermonsCount = 100,
+  onNavigateToSermon,
   onToggleRead,
   onToggleFavorite,
   onOpenNotes,
@@ -49,6 +58,13 @@ export const SermonCard: React.FC<SermonCardProps> = ({
   onToast,
 }) => {
   const [copiedVerse, setCopiedVerse] = useState(false);
+
+  const currentTrack = activeTrackId ? THEMATIC_TRACKS.find(t => t.id === activeTrackId) : null;
+  const trackIndex = currentTrack ? currentTrack.sermonIds.indexOf(sermon.num) : -1;
+  const prevTrackSermonNum = trackIndex > 0 ? currentTrack!.sermonIds[trackIndex - 1] : null;
+  const nextTrackSermonNum = trackIndex >= 0 && trackIndex < currentTrack!.sermonIds.length - 1 
+    ? currentTrack!.sermonIds[trackIndex + 1] 
+    : null;
 
   // Map font sizing for reading comfort
   const getTextClasses = () => {
@@ -390,6 +406,77 @@ export const SermonCard: React.FC<SermonCardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Thematic Track Navigation or General Next/Previous Lesson Navigation */}
+      {currentTrack && trackIndex !== -1 ? (
+        <div className="no-print mt-5 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-rosewood-50 via-warmgold-50/20 to-rosewood-50 dark:from-rosewood-950/40 dark:via-stone-850 dark:to-stone-900 border border-rosewood-200/80 dark:border-rosewood-900/60 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <span className="text-xl p-1.5 rounded-xl bg-white dark:bg-stone-800">{currentTrack.emoji}</span>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rosewood-700 dark:text-rosewood-400 block">
+                Trilha: {currentTrack.title}
+              </span>
+              <p className="text-xs font-semibold text-stone-800 dark:text-stone-200">
+                Passo {trackIndex + 1} de {currentTrack.sermonIds.length} da Sequência
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {prevTrackSermonNum && (
+              <button
+                onClick={() => onNavigateToSermon?.(prevTrackSermonNum)}
+                className="px-3 py-1.5 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-white dark:hover:bg-stone-800 text-stone-700 dark:text-stone-200 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Passo Anterior (#{prevTrackSermonNum})</span>
+              </button>
+            )}
+
+            {nextTrackSermonNum ? (
+              <button
+                onClick={() => onNavigateToSermon?.(nextTrackSermonNum)}
+                className="px-3.5 py-1.5 rounded-xl bg-rosewood-700 hover:bg-rosewood-800 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
+              >
+                <span>Próximo Passo (#{nextTrackSermonNum})</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <span className="px-3 py-1.5 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-xs font-bold border border-emerald-300/80">
+                ✓ Trilha Concluída!
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="no-print mt-5 pt-3.5 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-xs text-stone-500">
+          <div>
+            {sermon.num > 1 ? (
+              <button
+                onClick={() => onNavigateToSermon?.(sermon.num - 1)}
+                className="hover:text-rosewood-700 dark:hover:text-rosewood-400 font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title={`Ir para Lição #${sermon.num - 1}`}
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Lição Anterior (#{sermon.num - 1})</span>
+              </button>
+            ) : <span />}
+          </div>
+
+          <div>
+            {sermon.num < totalSermonsCount ? (
+              <button
+                onClick={() => onNavigateToSermon?.(sermon.num + 1)}
+                className="hover:text-rosewood-700 dark:hover:text-rosewood-400 font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                title={`Ir para Lição #${sermon.num + 1}`}
+              >
+                <span>Próxima Lição (#{sermon.num + 1})</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            ) : <span />}
+          </div>
+        </div>
+      )}
 
     </article>
   );

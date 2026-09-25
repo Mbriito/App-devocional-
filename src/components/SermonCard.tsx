@@ -16,7 +16,9 @@ import {
   MessageCircle,
   Quote,
   ArrowLeft,
-  ArrowRight
+  ArrowRight,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { Sermon, TextSizeOption } from '../types';
 import { THEMATIC_TRACKS } from '../data/thematicTracks';
@@ -32,6 +34,7 @@ interface SermonCardProps {
   activeTrackId?: string | null;
   totalSermonsCount?: number;
   onNavigateToSermon?: (num: number) => void;
+  onOpenImmersiveFocus?: (num: number) => void;
   onToggleRead: (num: number) => void;
   onToggleFavorite: (num: number) => void;
   onOpenNotes: (num: number) => void;
@@ -50,6 +53,7 @@ export const SermonCard: React.FC<SermonCardProps> = ({
   activeTrackId,
   totalSermonsCount = 100,
   onNavigateToSermon,
+  onOpenImmersiveFocus,
   onToggleRead,
   onToggleFavorite,
   onOpenNotes,
@@ -58,6 +62,7 @@ export const SermonCard: React.FC<SermonCardProps> = ({
   onToast,
 }) => {
   const [copiedVerse, setCopiedVerse] = useState(false);
+  const [isCardFocused, setIsCardFocused] = useState(false);
 
   const currentTrack = activeTrackId ? THEMATIC_TRACKS.find(t => t.id === activeTrackId) : null;
   const trackIndex = currentTrack ? currentTrack.sermonIds.indexOf(sermon.num) : -1;
@@ -122,11 +127,42 @@ export const SermonCard: React.FC<SermonCardProps> = ({
     <article
       id={`sermon-${sermon.num}`}
       className={`card-sermon print-break-inside-avoid bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-8 shadow-sm hover:shadow-md border transition-all duration-300 relative overflow-hidden ${
-        isRead
-          ? 'border-emerald-300/80 dark:border-emerald-900/60 bg-gradient-to-b from-emerald-50/20 via-white to-white dark:from-emerald-950/20 dark:via-stone-900 dark:to-stone-900'
-          : 'border-stone-200/90 dark:border-stone-800 hover:border-rosewood-300/70 dark:hover:border-rosewood-800/60'
+        isCardFocused
+          ? 'ring-2 ring-rosewood-500/60 shadow-lg p-6 sm:p-10'
+          : isRead
+            ? 'border-emerald-300/80 dark:border-emerald-900/60 bg-gradient-to-b from-emerald-50/20 via-white to-white dark:from-emerald-950/20 dark:via-stone-900 dark:to-stone-900'
+            : 'border-stone-200/90 dark:border-stone-800 hover:border-rosewood-300/70 dark:hover:border-rosewood-800/60'
       }`}
     >
+      {/* Immersive Focus Banner inside card */}
+      {isCardFocused && (
+        <div className="no-print mb-5 -mt-2 p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-rosewood-900 via-rosewood-800 to-stone-900 text-white flex flex-wrap items-center justify-between gap-2.5 text-xs shadow-xs animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-warmgold-300" />
+            <span className="font-semibold text-warmgold-100">Modo Foco Ativo • Elementos secundários ocultados para leitura</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {onOpenImmersiveFocus && (
+              <button
+                onClick={() => onOpenImmersiveFocus(sermon.num)}
+                className="px-3 py-1 rounded-xl bg-warmgold-500 hover:bg-warmgold-400 text-stone-950 text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95 shadow-2xs"
+                title="Expandir leitura em tela cheia sem distrações"
+              >
+                <Maximize2 className="w-3 h-3" />
+                <span>Tela Cheia</span>
+              </button>
+            )}
+            <button
+              onClick={() => setIsCardFocused(false)}
+              className="px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-[11px] font-medium transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <Minimize2 className="w-3 h-3" />
+              <span>Sair do Foco</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top Bar: Number, Module Tag, Title & Action Icons */}
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-stone-100 dark:border-stone-800 pb-4">
         
@@ -156,60 +192,98 @@ export const SermonCard: React.FC<SermonCardProps> = ({
         {/* Action Buttons Toolbar */}
         <div className="no-print flex items-center gap-1 sm:gap-1.5 self-end sm:self-auto shrink-0">
           
-          {/* Audio Reading */}
+          {/* Immersive Focus Mode Button */}
           <button
-            onClick={() => onToggleAudio(sermon.num)}
-            title={isPlayingAudio ? 'Pausar áudio' : 'Ouvir mensagem em voz alta'}
-            className={`p-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-              isPlayingAudio
-                ? 'bg-rosewood-600 text-white shadow-xs animate-pulse'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+            onClick={() => {
+              if (onOpenImmersiveFocus) {
+                onOpenImmersiveFocus(sermon.num);
+              } else {
+                setIsCardFocused(!isCardFocused);
+              }
+            }}
+            title="Modo Leitura Imersiva (Foco)"
+            className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
+              isCardFocused
+                ? 'bg-rosewood-700 text-white shadow-xs font-bold'
+                : 'bg-rosewood-50 dark:bg-rosewood-950/80 hover:bg-rosewood-100 dark:hover:bg-rosewood-900 text-rosewood-800 dark:text-rosewood-200 border border-rosewood-200/80 dark:border-rosewood-800 shadow-2xs'
             }`}
-            aria-label="Ouvir devocional"
           >
-            {isPlayingAudio ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            <Maximize2 className="w-3.5 h-3.5 text-rosewood-600 dark:text-rosewood-400" />
+            <span className="hidden sm:inline">Modo Foco</span>
           </button>
 
-          {/* Notes / Diary */}
+          {/* Quick in-card toggle if on desktop */}
           <button
-            onClick={() => onOpenNotes(sermon.num)}
-            title="Minhas anotações e oração"
-            className={`p-2 rounded-xl text-xs font-semibold transition-all relative cursor-pointer ${
-              hasNote
-                ? 'bg-rosewood-100 dark:bg-rosewood-950/80 text-rosewood-800 dark:text-rosewood-300 border border-rosewood-300 dark:border-rosewood-800'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+            onClick={() => setIsCardFocused(!isCardFocused)}
+            title={isCardFocused ? "Restaurar elementos do card" : "Ocultar elementos secundários deste card"}
+            className={`p-1.5 sm:p-2 rounded-xl text-xs transition-colors cursor-pointer ${
+              isCardFocused 
+                ? 'bg-warmgold-500 text-stone-950 font-bold' 
+                : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
             }`}
-            aria-label="Anotações pessoais"
           >
-            <PenTool className="w-4 h-4" />
-            {hasNote && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rosewood-600 rounded-full border-2 border-white dark:border-stone-900" />
-            )}
+            {isCardFocused ? <Minimize2 className="w-4 h-4" /> : <BookOpen className="w-4 h-4" />}
           </button>
 
-          {/* Favorite */}
-          <button
-            onClick={() => onToggleFavorite(sermon.num)}
-            title={isFavorite ? 'Remover dos favoritos' : 'Favoritar mensagem'}
-            className={`p-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-              isFavorite
-                ? 'bg-amber-500 text-white shadow-xs'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
-            }`}
-            aria-label="Favoritar"
-          >
-            <Bookmark className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
-          </button>
+          {/* Secondary buttons hidden during Card Focus Mode */}
+          {!isCardFocused && (
+            <>
+              {/* Audio Reading */}
+              <button
+                onClick={() => onToggleAudio(sermon.num)}
+                title={isPlayingAudio ? 'Pausar áudio' : 'Ouvir mensagem em voz alta'}
+                className={`p-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  isPlayingAudio
+                    ? 'bg-rosewood-600 text-white shadow-xs animate-pulse'
+                    : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                }`}
+                aria-label="Ouvir devocional"
+              >
+                {isPlayingAudio ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </button>
 
-          {/* Share on WhatsApp */}
-          <button
-            onClick={() => onOpenShare(sermon.num)}
-            title="Compartilhar no WhatsApp com uma amiga"
-            className="p-2 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-900/60 transition-colors cursor-pointer"
-            aria-label="Compartilhar"
-          >
-            <Share2 className="w-4 h-4" />
-          </button>
+              {/* Notes / Diary */}
+              <button
+                onClick={() => onOpenNotes(sermon.num)}
+                title="Minhas anotações e oração"
+                className={`p-2 rounded-xl text-xs font-semibold transition-all relative cursor-pointer ${
+                  hasNote
+                    ? 'bg-rosewood-100 dark:bg-rosewood-950/80 text-rosewood-800 dark:text-rosewood-300 border border-rosewood-300 dark:border-rosewood-800'
+                    : 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                }`}
+                aria-label="Anotações pessoais"
+              >
+                <PenTool className="w-4 h-4" />
+                {hasNote && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rosewood-600 rounded-full border-2 border-white dark:border-stone-900" />
+                )}
+              </button>
+
+              {/* Favorite */}
+              <button
+                onClick={() => onToggleFavorite(sermon.num)}
+                title={isFavorite ? 'Remover dos favoritos' : 'Favoritar mensagem'}
+                className={`p-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  isFavorite
+                    ? 'bg-amber-500 text-white shadow-xs'
+                    : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                }`}
+                aria-label="Favoritar"
+              >
+                <Bookmark className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+              </button>
+
+              {/* Share on WhatsApp */}
+              <button
+                onClick={() => onOpenShare(sermon.num)}
+                title="Compartilhar no WhatsApp com uma amiga"
+                className="p-2 rounded-xl text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-900/60 transition-colors cursor-pointer"
+                aria-label="Compartilhar"
+              >
+                <Share2 className="w-4 h-4" />
+              </button>
+            </>
+          )}
 
           {/* Mark as read */}
           <button
@@ -373,38 +447,40 @@ export const SermonCard: React.FC<SermonCardProps> = ({
           </button>
         </div>
 
-        {/* Secondary Sharing & Journal Actions */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Quick WhatsApp Share specifically for the Verse */}
-          <button
-            onClick={handleShareVerseWhatsApp}
-            className="px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-900/60 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Enviar apenas o versículo no WhatsApp"
-          >
-            <MessageCircle className="w-3.5 h-3.5" />
-            <span>Versículo no WhatsApp</span>
-          </button>
+        {/* Secondary Sharing & Journal Actions (Hidden when focused) */}
+        {!isCardFocused && (
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Quick WhatsApp Share specifically for the Verse */}
+            <button
+              onClick={handleShareVerseWhatsApp}
+              className="px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-900/60 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Enviar apenas o versículo no WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Versículo no WhatsApp</span>
+            </button>
 
-          {/* Full Devotional Share Modal */}
-          <button
-            onClick={() => onOpenShare(sermon.num, 'full')}
-            className="px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Compartilhar mensagem completa"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Devocional Completo</span>
-          </button>
+            {/* Full Devotional Share Modal */}
+            <button
+              onClick={() => onOpenShare(sermon.num, 'full')}
+              className="px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Compartilhar mensagem completa"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Devocional Completo</span>
+            </button>
 
-          {/* Personal Diary */}
-          <button
-            onClick={() => onOpenNotes(sermon.num)}
-            className="px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
-            title="Anotar no meu diário de oração"
-          >
-            <PenTool className="w-3.5 h-3.5 text-rosewood-600 dark:text-rosewood-400" />
-            <span>Meu Diário</span>
-          </button>
-        </div>
+            {/* Personal Diary */}
+            <button
+              onClick={() => onOpenNotes(sermon.num)}
+              className="px-3 py-2 rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Anotar no meu diário de oração"
+            >
+              <PenTool className="w-3.5 h-3.5 text-rosewood-600 dark:text-rosewood-400" />
+              <span>Meu Diário</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Thematic Track Navigation or General Next/Previous Lesson Navigation */}

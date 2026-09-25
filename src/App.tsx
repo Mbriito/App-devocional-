@@ -11,6 +11,7 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 import { FontSettingsModal } from './components/FontSettingsModal';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { Catalog500Modal } from './components/Catalog500Modal';
+import { ImmersiveReaderModal } from './components/ImmersiveReaderModal';
 import { Footer } from './components/Footer';
 import { SERMONS } from './data/sermons';
 import { THEMATIC_TRACKS } from './data/thematicTracks';
@@ -85,6 +86,7 @@ export default function App() {
   const [notesSermon, setNotesSermon] = useState<Sermon | null>(null);
   const [isFontModalOpen, setIsFontModalOpen] = useState<boolean>(false);
   const [is500ModalOpen, setIs500ModalOpen] = useState<boolean>(false);
+  const [immersiveSermonNum, setImmersiveSermonNum] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Audio Reading state
@@ -415,6 +417,11 @@ export default function App() {
     return SERMONS.find(s => s.num === playingSermonNum) || null;
   }, [playingSermonNum]);
 
+  const immersiveSermon = useMemo(() => {
+    if (!immersiveSermonNum) return null;
+    return SERMONS.find(s => s.num === immersiveSermonNum) || null;
+  }, [immersiveSermonNum]);
+
   const activeTrack = THEMATIC_TRACKS.find(t => t.id === activeTrackId);
 
   return (
@@ -543,6 +550,7 @@ export default function App() {
                 activeTrackId={activeTrackId}
                 totalSermonsCount={SERMONS.length}
                 onNavigateToSermon={handleScrollToSermon}
+                onOpenImmersiveFocus={(num) => setImmersiveSermonNum(num)}
                 onToggleRead={handleToggleRead}
                 onToggleFavorite={handleToggleFavorite}
                 onOpenNotes={(num) => {
@@ -604,6 +612,21 @@ export default function App() {
         onClose={() => setIs500ModalOpen(false)}
         onSelectSermon={handleScrollToSermon}
         onToast={showToast}
+      />
+
+      {/* Immersive Focus Reading Mode Modal */}
+      <ImmersiveReaderModal
+        sermon={immersiveSermon}
+        isOpen={immersiveSermonNum !== null}
+        isRead={immersiveSermon ? readSermons.has(immersiveSermon.num) : false}
+        isFavorite={immersiveSermon ? favoriteSermons.has(immersiveSermon.num) : false}
+        isPlayingAudio={immersiveSermon ? playingSermonNum === immersiveSermon.num : false}
+        totalSermonsCount={SERMONS.length}
+        onClose={() => setImmersiveSermonNum(null)}
+        onToggleRead={handleToggleRead}
+        onToggleFavorite={handleToggleFavorite}
+        onToggleAudio={handleToggleAudio}
+        onNavigateToSermon={(num) => setImmersiveSermonNum(num)}
       />
 
       {/* Share Modal */}
